@@ -40,7 +40,7 @@ router.get("/:code", async function (req, res) {
     throw new NotFoundError();
   }
 
-  return res.json({ companies });
+  return res.json({ company });
 });
 
 /** Add a company
@@ -128,7 +128,8 @@ router.delete("/:code", async function (req, res) {
 
   const results = await db.query(
     `DELETE FROM companies
-    WHERE code = $1`, [code]
+    WHERE code = $1
+    RETURNING code`, [code]
   );
 
   if (!results.rows[0]) throw new NotFoundError();
