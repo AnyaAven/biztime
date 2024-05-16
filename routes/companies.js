@@ -78,7 +78,50 @@ router.post("", async function (req, res) {
 
   return res.status(201).json({ company });
 
-})
+});
+
+
+/** Update a company
+ *
+ * Inputs:
+ * - JSON of {name, description}
+ * Returns {company: {code, name, description}}
+ */
+router.put("/:code", async function (req, res) {
+  const code = req.params.code;
+
+  const updateCompany = req.body;
+
+  if (updateCompany === undefined) {
+    throw new BadRequestError();
+  }
+
+  if (!("name" in updateCompany)) {
+    throw new BadRequestError();
+  }
+
+  if (!("description" in updateCompany)) {
+    throw new BadRequestError();
+  }
+
+  const results = await db.query(
+    `
+    UPDATE companies
+    SET name=$1,
+        description=$2
+    WHERE code = $3
+    RETURNING code, name, description
+    `, [updateCompany.name, updateCompany.description, code]
+  );
+  const company = results.rows[0];
+  if (!company) {
+    throw new NotFoundError();
+  }
+
+  //TODO: what happens when put does create a company?
+  // Wouldn't that be a status of 201?
+  return res.json({ company });
+});
 
 
 export default router;
