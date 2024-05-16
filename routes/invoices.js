@@ -126,7 +126,7 @@ router.put("/:id", async function (req, res) {
 
     const results = await db.query(
         `UPDATE invoices
-            SET amt=$1,
+            SET amt=$1
             WHERE id = $2
             RETURNING id, comp_code, amt, paid, add_date, paid_date`,
         [amt, id]
