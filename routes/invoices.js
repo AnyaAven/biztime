@@ -83,14 +83,14 @@ router.post("", async function (req, res) {
         throw new BadRequestError();
     }
 
-    const { id, comp_code, amt, paid, add_date, paid_date } = req.body;
+    const { comp_code, amt } = req.body;
 
     const results = await db.query(
         `
-    INSERT INTO invoices (id, comp_code, amt, paid, add_date, paid_date)
-    VALUES ($1, $2, $3, $4, $5, $6)
+    INSERT INTO invoices (comp_code, amt)
+    VALUES ($1, $2)
     RETURNING id, comp_code, amt, paid, add_date, paid_date
-    `, [id, comp_code, amt, paid, add_date, paid_date]
+    `, [comp_code, amt]
     );
     const invoice = results.rows[0];
 
