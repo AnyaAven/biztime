@@ -20,7 +20,7 @@ router.get("", async function(req, res){
   return res.json({ companies });
 });
 
-
+// TODO: add error code
 /** Get company by code
  *
  * Returns {company: {code, name, description}}
