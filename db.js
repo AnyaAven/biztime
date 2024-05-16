@@ -4,8 +4,8 @@ import pg from "pg";
 const { Client } = pg;
 
 const DB_URI = process.env.NODE_ENV === "test"
-  ? "postgresql:///biztime"
-  : "postgresql:///biztime_test";
+  ? "postgresql:///biztime_test"
+  : "postgresql:///biztime";
 
 const db = new Client({
   connectionString: DB_URI,
