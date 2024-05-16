@@ -21,23 +21,32 @@ router.get("", async function (req, res) {
 
 /** Get company by code
  *
- * Returns {company: {code, name, description}}
+ * Returns {company: {code, name, description, invoices: [id, ...]}}
 */
 router.get("/:code", async function (req, res) {
   const code = req.params.code;
 
-  const results = await db.query(
+  const cResults = await db.query(
     `SELECT code, name, description
         FROM companies
         WHERE code = $1`,
     [code]);
 
-  const company = results.rows[0];
+  const company = cResults.rows[0];
 
-  //TODO: does it matter if we do a falsy check?
   if (company === undefined) {
     throw new NotFoundError();
   }
+
+  const iResults = await db.query(
+    `SELECT id
+        FROM invoices
+        WHERE comp_code = $1`,
+    [code]);
+
+  const invoices = iResults.rows;
+
+  company.invoices = invoices || [];
 
   return res.json({ company });
 });
@@ -48,8 +57,6 @@ router.get("/:code", async function (req, res) {
  * Returns {company: {code, name, description}}
  */
 router.post("", async function (req, res) {
-  const req = req.body;
-
   if (req.body === undefined) {
     throw new BadRequestError();
   }
