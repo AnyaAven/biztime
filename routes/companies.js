@@ -21,4 +21,23 @@ router.get("", async function(req, res){
 });
 
 
+/** Get company by code
+ *
+ * Returns {company: {code, name, description}}
+*/
+router.get("/:code", async function(req, res){
+  const code = req.params.code;
+
+  const results = await db.query(
+    `SELECT code, name, description
+    FROM companies
+    WHERE code = $1`,
+    [code]);
+
+  const company = results.rows[0];
+
+  return res.json({ companies });
+});
+
+
 export default router;
