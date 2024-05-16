@@ -13,8 +13,7 @@ const router = express.Router();
 router.get("", async function (req, res) {
   const results = await db.query(
     `SELECT code, name
-    FROM companies`);
-
+        FROM companies`); //TODO: order by!
   const companies = results.rows;
 
   return res.json({ companies });
@@ -29,8 +28,8 @@ router.get("/:code", async function (req, res) {
 
   const results = await db.query(
     `SELECT code, name, description
-    FROM companies
-    WHERE code = $1`,
+        FROM companies
+        WHERE code = $1`,
     [code]);
 
   const company = results.rows[0];
@@ -49,30 +48,25 @@ router.get("/:code", async function (req, res) {
  * Returns {company: {code, name, description}}
  */
 router.post("", async function (req, res) {
-  const newCompany = req.body;
+  const req = req.body;
 
-  if (newCompany === undefined) {
+  if (req.body === undefined) {
     throw new BadRequestError();
   }
 
-  if (!("code" in newCompany)) {
+  if (!("code" in req.body) ||
+    !("name" in req.body) ||
+    !("description" in req.body)) {
     throw new BadRequestError();
   }
-
-  if (!("name" in newCompany)) {
-    throw new BadRequestError();
-  }
-
-  if (!("description" in newCompany)) {
-    throw new BadRequestError();
-  }
+  const { code, name, description } = req.body;
 
   const results = await db.query(
     `
     INSERT INTO companies (code, name, description)
     VALUES ($1, $2, $3)
     RETURNING code, name, description
-    `, [newCompany.code, newCompany.name, newCompany.description]
+    `, [code, name, description]
   );
   const company = results.rows[0];
 
@@ -96,11 +90,7 @@ router.put("/:code", async function (req, res) {
     throw new BadRequestError();
   }
 
-  if (!("name" in updateCompany)) {
-    throw new BadRequestError();
-  }
-
-  if (!("description" in updateCompany)) {
+  if (!("name" in updateCompany) || !("description" in updateCompany)) {
     throw new BadRequestError();
   }
 
@@ -114,15 +104,15 @@ router.put("/:code", async function (req, res) {
     `, [updateCompany.name, updateCompany.description, code]
   );
   const company = results.rows[0];
+
   if (!company) {
     throw new NotFoundError();
   }
 
-  //TODO: what happens when put does create a company?
-  // Wouldn't that be a status of 201?
   return res.json({ company });
 });
 
+/** Delete company by code */
 router.delete("/:code", async function (req, res) {
   const code = req.params.code;
 
