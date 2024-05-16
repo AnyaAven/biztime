@@ -1,12 +1,15 @@
 /** BizTime express application. */
 
 import express from "express";
+import morgan from "morgan";
+
 import { NotFoundError } from "./expressError.js";
 import companyRoutes from "./routes/companies.js";
 import invoicesRoutes from "./routes/invoices.js";
 
 const app = express();
 
+app.use(morgan('dev'));
 app.use(express.json());
 app.use("/companies", companyRoutes);
 app.use("/invoices", invoicesRoutes);
