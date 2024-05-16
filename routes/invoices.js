@@ -13,8 +13,8 @@ const router = express.Router();
 router.get("", async function (req, res) {
     const results = await db.query(
         `SELECT id, comp_code
-        FROM invoices
-        ORDER BY id`);
+            FROM invoices
+            ORDER BY id`);
     const invoices = results.rows;
 
     return res.json({ invoices });
@@ -39,8 +39,8 @@ router.get("/:id", async function (req, res) {
 
     const iResults = await db.query(
         `SELECT id, amt, paid, add_date, paid_date, comp_code
-        FROM invoices
-        WHERE id = $1`,
+            FROM invoices
+            WHERE id = $1`,
         [id]);
 
     const invoice = iResults.rows[0];
@@ -52,8 +52,8 @@ router.get("/:id", async function (req, res) {
 
     const cResults = await db.query(
         `SELECT code, name, description
-        FROM companies
-        WHERE code = $1`,
+            ROM companies
+            WHERE code = $1`,
         [compCode]);
 
     const company = cResults.rows[0];
@@ -86,11 +86,10 @@ router.post("", async function (req, res) {
     const { comp_code, amt } = req.body;
 
     const results = await db.query(
-        `
-    INSERT INTO invoices (comp_code, amt)
-    VALUES ($1, $2)
-    RETURNING id, comp_code, amt, paid, add_date, paid_date
-    `, [comp_code, amt]
+        `INSERT INTO invoices (comp_code, amt)
+            VALUES ($1, $2)
+            RETURNING id, comp_code, amt, paid, add_date, paid_date`,
+        [comp_code, amt]
     );
     const invoice = results.rows[0];
 

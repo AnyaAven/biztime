@@ -13,7 +13,9 @@ const router = express.Router();
 router.get("", async function (req, res) {
   const results = await db.query(
     `SELECT code, name
-        FROM companies`); //TODO: order by!
+        FROM companies
+        ORDER BY code`
+  );
   const companies = results.rows;
 
   return res.json({ companies });
@@ -41,7 +43,8 @@ router.get("/:code", async function (req, res) {
   const iResults = await db.query(
     `SELECT id
         FROM invoices
-        WHERE comp_code = $1`,
+        WHERE comp_code = $1
+        ORDER BY id`,
     [code]);
 
   const invoices = iResults.rows;
