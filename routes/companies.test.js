@@ -7,7 +7,7 @@ import db from "../db.js";
 // {id}, {id}, ...
 let testCompany1, testCompany2, testInvoice1, testInvoice2;
 
-beforeEach(async function (){
+beforeEach(async function () {
   await db.query("DELETE FROM companies");
   await db.query("DELETE FROM invoices");
 
@@ -31,11 +31,11 @@ beforeEach(async function (){
 });
 
 //TODO: Can we use Date object for testing the current date.
-expect.any(String)
+expect.any(String);
 
-describe("GET /companies", function (){
+describe("GET /companies", function () {
 
-  test("Get a list of companies", async function(){
+  test("Get a list of companies", async function () {
     const resp = await request(app).get("/companies");
 
     expect(resp.body).toEqual(
@@ -45,14 +45,14 @@ describe("GET /companies", function (){
           { code: 'cCode2', name: 'cName2' }
         ]
       }
-    )
-  })
+    );
+  });
 });
 
 
-describe("GET /companies/:code ", function (){
+describe("GET /companies/:code ", function () {
 
-  test("Get a company by code", async function(){
+  test("Get a company by code", async function () {
     const resp = await request(app).get(`/companies/${testCompany1.code}`);
 
     expect(resp.body).toEqual(
@@ -61,34 +61,35 @@ describe("GET /companies/:code ", function (){
           code: 'cCode1',
           name: 'cName1',
           description: 'cDescription1',
-          invoices: [ testInvoice1.id ]
+          invoices: [testInvoice1.id]
         }
       }
-    )
-  })
+    );
+  });
 
-  test("Get a 404 when getting a company by an invalid code", async function(){
+  test("Get a 404 when getting a company by an invalid code", async function () {
     const resp = await request(app)
       .get(`/companies/${testCompany1.code + testCompany2.code}`);
 
-    expect(resp.statusCode).toEqual(404)
-  })
+    expect(resp.statusCode).toEqual(404);
+  });
 });
 
 
-describe("POST /companies ", function (){
+describe("POST /companies ", function () {
 
-  test("Add a company to the DB ", async function(){
+  test("Add a company to the DB ", async function () {
     let results = await db.query("SELECT code FROM companies");
 
-    expect(results.rows.length).toEqual(2)
+    expect(results.rows.length).toEqual(2);
 
     const resp = await request(app)
       .post("/companies")
       .send({
         code: "newCompanyCode",
         name: "newCompanyName",
-        description: "newDescription"});
+        description: "newDescription"
+      });
 
     expect(resp.body).toEqual(
       {
@@ -98,30 +99,31 @@ describe("POST /companies ", function (){
           description: 'newDescription'
         }
       }
-    )
-    expect(resp.statusCode).toEqual(201)
+    );
+    expect(resp.statusCode).toEqual(201);
 
     results = await db.query("SELECT code FROM companies");
-    expect(results.rows.length).toEqual(3)
-  })
+    expect(results.rows.length).toEqual(3);
+  });
 
-  test("Get a 400 when adding a company without sending json", async function(){
+  test("Get a 400 when adding a company without sending json", async function () {
     const resp = await request(app)
       .post(`/companies`);
 
-    expect(resp.statusCode).toEqual(400)
-  })
+    expect(resp.statusCode).toEqual(400);
+  });
 
   test("Get a 400 when adding a company with the wrong body keys",
-  async function(){
-    const resp = await request(app)
-      .post(`/companies`).send({
+    async function () {
+      const resp = await request(app)
+        .post(`/companies`).send({
           badCode: "bad",
           badName: "bad",
-          badDescription: "bad"});
+          badDescription: "bad"
+        });
 
-    expect(resp.statusCode).toEqual(400)
-  })
+      expect(resp.statusCode).toEqual(400);
+    });
 });
 
 
