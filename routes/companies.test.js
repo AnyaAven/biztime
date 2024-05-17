@@ -76,6 +76,56 @@ describe("GET /companies/:code ", function (){
 });
 
 
+describe("POST /companies ", function (){
+
+  test("Add a company to the DB ", async function(){
+    let results = await db.query("SELECT code FROM companies");
+
+    expect(results.rows.length).toEqual(2)
+
+    const resp = await request(app)
+      .post("/companies")
+      .send({
+        code: "newCompanyCode",
+        name: "newCompanyName",
+        description: "newDescription"});
+
+    expect(resp.body).toEqual(
+      {
+        company: {
+          code: 'newCompanyCode',
+          name: 'newCompanyName',
+          description: 'newDescription'
+        }
+      }
+    )
+    expect(resp.statusCode).toEqual(201)
+
+    results = await db.query("SELECT code FROM companies");
+    expect(results.rows.length).toEqual(3)
+  })
+
+  test("Get a 400 when adding a company without sending json", async function(){
+    const resp = await request(app)
+      .post(`/companies`);
+
+    expect(resp.statusCode).toEqual(400)
+  })
+
+  test("Get a 400 when adding a company with the wrong body keys",
+  async function(){
+    const resp = await request(app)
+      .post(`/companies`).send({
+          badCode: "bad",
+          badName: "bad",
+          badDescription: "bad"});
+
+    expect(resp.statusCode).toEqual(400)
+  })
+});
+
+
+
 afterAll(async function () {
   await db.end();
 });
