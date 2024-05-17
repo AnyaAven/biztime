@@ -20,7 +20,7 @@ router.get("", async function (req, res) {
     return res.json({ invoices });
 });
 
-/** Get invoices by id
+/** Get an invoice by id
  *
  * Returns: 
  * {
@@ -37,6 +37,7 @@ router.get("", async function (req, res) {
 router.get("/:id", async function (req, res) {
     const id = req.params.id;
 
+    //TODO: use a join (only getting back 1 row from the query)
     const iResults = await db.query(
         `SELECT id, amt, paid, add_date, paid_date, comp_code
             FROM invoices
@@ -52,9 +53,10 @@ router.get("/:id", async function (req, res) {
 
     const cResults = await db.query(
         `SELECT code, name, description
-            ROM companies
+            FROM companies
             WHERE code = $1`,
-        [compCode]);
+        [compCode]
+    );
 
     const company = cResults.rows[0];
 
@@ -83,7 +85,16 @@ router.post("", async function (req, res) {
         throw new BadRequestError();
     }
 
-    const { comp_code, amt } = req.body;
+    //TODO: handle errors for creating invoices for companies that don't exist
+    // could query the db and see if the company exists
+    // generally do not want to be sending 500s (send 404s or BadRequestError)
+    // could wrap insert statement in a try/catch IntegrityError
+    let { comp_code, amt } = req.body;
+    amt = Number(amt);
+
+    if (isNaN(amt)) {
+        throw new BadRequestError();
+    }
 
     const results = await db.query(
         `INSERT INTO invoices (comp_code, amt)
@@ -117,9 +128,14 @@ router.post("", async function (req, res) {
 router.put("/:id", async function (req, res) {
     const id = req.params.id;
 
-    const { amt } = req.body;
+    if (req.body === undefined) {
+        throw new BadRequestError();
+    }
 
-    if (amt === undefined) {
+    let { amt } = req.body;
+    amt = Number(amt);
+
+    if (isNaN(amt)) {
         throw new BadRequestError();
     }
 
@@ -139,7 +155,9 @@ router.put("/:id", async function (req, res) {
     return res.json({ invoice });
 });
 
-/** Delete invoice by id */
+/** Delete invoice by id 
+ * TODO: include example of what you're passing back
+*/
 router.delete("/:id", async function (req, res) {
     const id = req.params.id;
 

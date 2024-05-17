@@ -32,8 +32,8 @@ router.get("/:code", async function (req, res) {
     `SELECT code, name, description
         FROM companies
         WHERE code = $1`,
-    [code]);
-
+    [code]
+  );
   const company = cResults.rows[0];
 
   if (company === undefined) {
@@ -45,11 +45,18 @@ router.get("/:code", async function (req, res) {
         FROM invoices
         WHERE comp_code = $1
         ORDER BY id`,
-    [code]);
+    [code]
+  );
 
-  const invoices = iResults.rows;
+  //TODO: specify invoice ids
+  let ids;
+  if (!iResults.rows) {
+    ids = [];
+  } else {
+    ids = iResults.rows.map(inv => inv.id);
+  }
 
-  company.invoices = invoices || [];
+  company.invoices = ids;
 
   return res.json({ company });
 });
