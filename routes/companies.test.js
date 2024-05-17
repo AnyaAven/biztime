@@ -28,8 +28,6 @@ beforeEach(async function () {
   testInvoice1 = iResults.rows[0];
 });
 
-//TODO: Can we use Date object for testing the current date.
-expect.any(String);
 
 describe("GET /companies", function () {
 
