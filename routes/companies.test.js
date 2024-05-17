@@ -50,7 +50,7 @@ describe("GET /companies", function (){
 });
 
 
-describe("GET /companies:code ", function (){
+describe("GET /companies/:code ", function (){
 
   test("Get a company by code", async function(){
     const resp = await request(app).get(`/companies/${testCompany1.code}`);
