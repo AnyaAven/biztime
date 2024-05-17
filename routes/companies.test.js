@@ -186,6 +186,18 @@ describe("PUT /companies/:code ", function () {
 
       expect(resp.statusCode).toEqual(400);
     });
+
+  test("404 if company not found", async function () {
+
+    const resp = await request(app)
+      .put(`/companies/${testCompany1.code + testCompany2.code}`)
+      .send({
+        name: "changedCompanyName",
+        description: "changedDescription"
+      });
+
+    expect(resp.statusCode).toEqual(404);
+  });
 });
 
 describe("DELETE /companies/:code", function () {
@@ -195,7 +207,7 @@ describe("DELETE /companies/:code", function () {
 
     const resp = await request(app).delete(`/companies/${testCompany1.code}`);
 
-    expect(resp.body).toEqual({ status: "deleted" })
+    expect(resp.body).toEqual({ status: "deleted" });
 
     results = await db.query("SELECT code FROM companies");
     expect(results.rows.length).toEqual(1);
@@ -206,7 +218,7 @@ describe("DELETE /companies/:code", function () {
     const resp = await request(app)
       .delete(`/companies/${testCompany1.code + testCompany2.code}`);
 
-    expect(resp.statusCode).toEqual(404)
+    expect(resp.statusCode).toEqual(404);
   });
 
 });
