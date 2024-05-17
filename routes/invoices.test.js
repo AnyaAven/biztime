@@ -7,6 +7,10 @@ import db from "../db.js";
 // {id}, {id}, ...
 let testCompany1, testCompany2, testInvoice1, testInvoice2;
 
+//TODO: Can we use Date object for testing the current date.
+//expect.any(String);
+
+
 beforeEach(async function (){
   await db.query("DELETE FROM companies");
   await db.query("DELETE FROM invoices");
