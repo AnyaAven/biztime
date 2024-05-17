@@ -127,6 +127,50 @@ describe("POST /companies ", function () {
 });
 
 
+describe("PUT /companies/:code ", function () {
+
+  test("Update an existing company ", async function () {
+
+    const resp = await request(app)
+      .put(`/companies/${testCompany1.code}`)
+      .send({
+        name: "changedCompanyName",
+        description: "changedDescription"
+      });
+
+    expect(resp.body).toEqual(
+      {
+        company: {
+          code: testCompany1.code,
+          name: 'changedCompanyName',
+          description: 'changedDescription'
+        }
+      }
+    );
+    expect(resp.statusCode).toEqual(200);
+  });
+
+  test("Get a 400 when updating a company without sending json",
+    async function () {
+      const resp = await request(app)
+        .put(`/companies/${testCompany1.code}`);
+
+      expect(resp.statusCode).toEqual(400);
+    });
+
+  test("Get a 400 when updating a company with the wrong body keys",
+    async function () {
+      const resp = await request(app)
+        .put(`/companies/${testCompany1.code}`)
+        .send({
+          badName: "bad",
+          badDescription: "bad"
+        });
+
+      expect(resp.statusCode).toEqual(400);
+    });
+});
+
 
 afterAll(async function () {
   await db.end();
