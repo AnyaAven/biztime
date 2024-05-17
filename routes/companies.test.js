@@ -5,7 +5,7 @@ import app from "../app.js";
 import db from "../db.js";
 
 // {id}, {id}, ...
-let testCompany1, testCompany2, testInvoice1, testInvoice2;
+let testCompany1, testCompany2, testInvoice1;
 
 beforeEach(async function () {
   await db.query("DELETE FROM companies");
@@ -22,12 +22,10 @@ beforeEach(async function () {
 
   const iResults = await db.query(`
     INSERT INTO invoices (comp_code, amt)
-    VALUES ('cCode1', 100),
-          ('cCode2', 200)
+    VALUES ('cCode1', 100)
     RETURNING id`);
 
   testInvoice1 = iResults.rows[0];
-  testInvoice2 = iResults.rows[1];
 });
 
 //TODO: Can we use Date object for testing the current date.
@@ -64,6 +62,23 @@ describe("GET /companies/:code ", function () {
           name: 'cName1',
           description: 'cDescription1',
           invoices: [testInvoice1.id]
+        }
+      }
+    );
+
+    expect(resp.statusCode).toEqual(200);
+  });
+
+  test("Get a company without any invoices", async function () {
+    const resp = await request(app).get(`/companies/${testCompany2.code}`);
+
+    expect(resp.body).toEqual(
+      {
+        company: {
+          code: 'cCode2',
+          name: 'cName2',
+          description: 'cDescription2',
+          invoices: []
         }
       }
     );
