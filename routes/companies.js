@@ -48,15 +48,15 @@ router.get("/:code", async function (req, res) {
     [code]
   );
 
-  //TODO: specify invoice ids
-  let ids;
+
+  let invoiceIds;
   if (!iResults.rows) {
-    ids = [];
+    invoiceIds = [];
   } else {
-    ids = iResults.rows.map(inv => inv.id);
+    invoiceIds = iResults.rows.map(inv => inv.id);
   }
 
-  company.invoices = ids;
+  company.invoices = invoiceIds;
 
   return res.json({ company });
 });
