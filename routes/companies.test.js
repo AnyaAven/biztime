@@ -188,6 +188,28 @@ describe("PUT /companies/:code ", function () {
     });
 });
 
+describe("DELETE /companies/:code", function () {
+  test("Delete a user", async function () {
+    let results = await db.query("SELECT code FROM companies");
+    expect(results.rows.length).toEqual(2);
+
+    const resp = await request(app).delete(`/companies/${testCompany1.code}`);
+
+    expect(resp.body).toEqual({ status: "deleted" })
+
+    results = await db.query("SELECT code FROM companies");
+    expect(results.rows.length).toEqual(1);
+  });
+
+  test("404 if company not found", async function () {
+
+    const resp = await request(app)
+      .delete(`/companies/${testCompany1.code + testCompany2.code}`);
+
+    expect(resp.statusCode).toEqual(404)
+  });
+
+});
 
 afterAll(async function () {
   await db.end();
