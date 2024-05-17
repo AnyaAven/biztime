@@ -49,6 +49,33 @@ describe("GET /companies", function (){
   })
 });
 
+
+describe("GET /companies:code ", function (){
+
+  test("Get a company by code", async function(){
+    const resp = await request(app).get(`/companies/${testCompany1.code}`);
+
+    expect(resp.body).toEqual(
+      {
+        company: {
+          code: 'cCode1',
+          name: 'cName1',
+          description: 'cDescription1',
+          invoices: [ testInvoice1.id ]
+        }
+      }
+    )
+  })
+
+  test("Get a 404 when getting a company by an invalid code", async function(){
+    const resp = await request(app)
+      .get(`/companies/${testCompany1.code + testCompany2.code}`);
+
+    expect(resp.statusCode).toEqual(404)
+  })
+});
+
+
 afterAll(async function () {
   await db.end();
 });
