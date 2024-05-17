@@ -48,9 +48,8 @@ router.get("/:code", async function (req, res) {
     [code]
   );
 
-
   let invoiceIds;
-  if (!iResults.rows) {
+  if (!iResults.rowCount) {
     invoiceIds = [];
   } else {
     invoiceIds = iResults.rows.map(inv => inv.id);
