@@ -46,6 +46,8 @@ describe("GET /companies", function () {
         ]
       }
     );
+
+    expect(resp.statusCode).toEqual(200);
   });
 });
 
@@ -65,6 +67,8 @@ describe("GET /companies/:code ", function () {
         }
       }
     );
+
+    expect(resp.statusCode).toEqual(200);
   });
 
   test("Get a 404 when getting a company by an invalid code", async function () {
